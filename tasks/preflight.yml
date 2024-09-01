@@ -1,0 +1,41 @@
+---
+- name: Assert usage of systemd as an init system
+  ansible.builtin.assert:
+    that: ansible_service_mgr == 'systemd'
+    msg: "This role only works with systemd"
+
+- name: Install package fact dependencies
+  become: true
+  ansible.builtin.package:
+    name: "{{ _pkg_fact_req }}"
+    state: present
+  when: (_pkg_fact_req)
+  vars:
+    _pkg_fact_req: "{% if (ansible_pkg_mgr == 'apt') %}\
+      {{ ('python-apt' if ansible_python_version is version('3', '<') else 'python3-apt') }}
+      {% else %}\
+      {% endif %}"
+
+- name: Gather package facts
+  ansible.builtin.package_facts:
+  when: "not 'packages' in ansible_facts"
+
+- name: Check if Traefik is installed
+  ansible.builtin.stat:
+    path: "{{ traefik_binary_install_dir }}/traefik"
+  register: __traefik_is_installed
+  check_mode: false
+  tags:
+    - traefik_install
+
+- name: Discover latest version
+  ansible.builtin.set_fact:
+    traefik_version: "{{ (lookup('url', 'https://api.github.com/repos/{{ _traefik_repo }}/releases/latest', headers=_github_api_headers,
+                            split_lines=False) | from_json).get('tag_name') | replace('v', '') }}"
+  run_once: true
+  until: traefik_version is version('0.0.0', '>=')
+  retries: 10
+  when:
+    - traefik_version == "latest"
+    - traefik_binary_local_dir | length == 0
+    - not traefik_skip_install

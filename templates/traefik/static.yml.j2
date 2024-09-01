@@ -1,0 +1,15 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{{ ansible_managed | comment }}
+providers:
+  file:
+    filename: "{{ traefik_config_dir}}/traefik_dynamic.yml"
+{% if traefik_api_enabled is defined and traefik_api_enabled %}
+  {% if traefik_dashboard_enabled is defined %}
+api:
+  dashboard: {{ 'true' if traefik_dashboard_enabled else 'false' }}
+  {% else %}
+api: {}
+  {% endif %}
+{% endif %}
+{% include 'entrypoints.j2' with context %}
+{% include 'certificate_resolvers.j2' with context %}

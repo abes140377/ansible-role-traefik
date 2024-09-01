@@ -1,0 +1,10 @@
+---
+- name: Restart Traefik
+  listen: "restart traefik"
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: traefik
+    state: restarted
+  when:
+    - not ansible_check_mode

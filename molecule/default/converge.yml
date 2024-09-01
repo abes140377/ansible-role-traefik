@@ -1,0 +1,62 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Update apt cache.
+      apt: update_cache=yes cache_valid_time=600
+      when: ansible_os_family == 'Debian'
+
+    - name: Wait for systemd to complete initialization.  # noqa 303
+      command: systemctl is-system-running
+      register: systemctl_status
+      until: >
+        'running' in systemctl_status.stdout or
+        'degraded' in systemctl_status.stdout
+      retries: 30
+      delay: 5
+      when: ansible_service_mgr == 'systemd'
+      changed_when: false
+      failed_when: systemctl_status.rc > 1
+
+  roles:
+    - role: tomhesse.traefik
+      vars:
+        traefik_environment_variables:
+          API_TOKEN: example-api-token
+        traefik_acme_storage:
+          - /etc/traefik/resolver1.json
+          - /etc/traefik/resolver2.json
+        traefik_entrypoints:
+          - name: web
+            address: :80
+          - name: websercure
+            address: :443
+          - name: traefik
+            address: :8080
+        traefik_api_enabled: true
+        traefik_dashboard_enabled: true
+        traefik_services:
+          - name: example-service
+            loadBalancer:
+              servers:
+                - url: https://example.com/
+        traefik_middlewares:
+          - name: example-basic-auth
+            basicAuth:
+              users:
+                - traefik:$apr1$cBjT1kfY$bqHz991pR0jT.vxChyYPf/
+        traefik_routers:
+          - name: traefik-dashboard
+            entrypoints:
+              - traefik
+            middlewares:
+              - example-basic-auth
+            rule: Host(`traefik.example.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+            service: api@internal
+          - name: example-router
+            entrypoints:
+              - web
+            service: example-service
+            rule: Host(`example.example.com`)

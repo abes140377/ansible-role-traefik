@@ -1,0 +1,17 @@
+    {{ middleware.name }}:
+      buffering:
+      {% if middleware.buffering.maxRequestBodyBytes is defined and middleware.buffering.maxRequestBodyBytes is not none %}
+        maxRequestBodyBytes: {{ middleware.buffering.maxRequestBodyBytes }}
+      {% endif %}
+      {% if middleware.buffering.memRequestBodyBytes is defined and middleware.buffering.memRequestBodyBytes is not none %}
+        memRequestBodyBytes: {{ middleware.buffering.memRequestBodyBytes }}
+      {% endif %}
+      {% if middleware.buffering.maxResponseBodyBytes is defined and middleware.buffering.maxResponseBodyBytes is not none %}
+        maxResponseBodyBytes: {{ middleware.buffering.maxResponseBodyBytes }}
+      {% endif %}
+      {% if middleware.buffering.memResponseBodyBytes is defined and middleware.buffering.memResponseBodyBytes is not none %}
+        memResponseBodyBytes: {{ middleware.buffering.memResponseBodyBytes }}
+      {% endif %}
+      {% if middleware.buffering.retryExpression is defined and middleware.buffering.retryExpression is not none %}
+        retryExpression: {{ middleware.buffering.retryExpression }}
+      {% endif %}

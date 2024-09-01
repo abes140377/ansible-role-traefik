@@ -1,0 +1,29 @@
+{% if traefik_services is defined and traefik_services is not none %}
+  {% set valid_services = [] %}
+  {% for service in traefik_services %}
+    {% if service is not none and service.name is defined and
+      ((service.failover.service is defined and service.failover.service is not none) or
+      (service.loadBalancer.servers[0].url is defined and service.loadBalancer.servers[0].url is not none) or
+      ((service.mirroring.service is defined and service.mirroring.service is not none) and (service.mirroring.mirrors is defined and
+      (service.mirroring.mirrors[0].name is defined and service.mirroring.mirrors[0].name is not none)and
+      (service.mirroring.mirrors[0].percent is defined and service.mirroring.mirrors[0].percent is not none))) or
+      (service.weighted.services[0].name is defined and service.weighted.services[0].name is not none) and
+      (service.weighted.services[0].weight is defined and service.weighted.services[0].weight is not none)) %}
+      {% set valid_services = valid_services.append(service) %}
+    {% endif %}
+  {% endfor %}
+  {% if valid_services | length > 0 %}
+  services:
+  {% for service in valid_services %}
+    {% if service.failover is defined %}
+      {% include 'services/failover.j2' with context %}
+    {% elif service.loadBalancer is defined %}
+      {% include 'services/loadbalancer.j2' with context %}
+    {% elif service.mirroring is defined %}
+      {% include 'services/mirroring.j2' with context %}
+    {% elif service.weighted is defined %}
+      {% include 'services/weighted.j2' with context %}
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+{% endif %}

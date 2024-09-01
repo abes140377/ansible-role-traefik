@@ -1,0 +1,13 @@
+---
+traefik_version: v3.0.0
+traefik_binary_local_dir: ""
+traefik_binary_url: "https://github.com/{{ _traefik_repo }}/releases/download/{{ traefik_version }}/traefik_{{ traefik_version }}_linux_{{ go_arch }}.tar.gz"
+traefik_skip_install: false
+
+traefik_binary_install_dir: "/usr/local/bin"
+traefik_system_group: "traefik"
+traefik_system_user: "{{ traefik_system_group }}"
+traefik_config_dir: /etc/traefik
+
+# Local path to stash the archive and its extraction
+traefik_archive_path: "/tmp"

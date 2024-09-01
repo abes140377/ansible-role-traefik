@@ -1,0 +1,21 @@
+    {{ middleware.name }}:
+      ipAllowList:
+        sourceRange:
+        {% for range in middleware.ipAllowList.sourceRange %}
+          - {{ range }}
+        {% endfor %}
+      {% if middleware.ipAllowList.ipStrategy is defined and middleware.ipAllowList.ipStrategy is not none %}
+        ipStrategy:
+        {% if middleware.ipAllowList.ipStrategy.depth is defined and middleware.ipAllowList.ipStrategy.depth is not none %}
+          depth: {{ middleware.ipAllowList.ipStrategy.depth }}
+        {% endif %}
+        {% if middleware.ipAllowList.ipStrategy.excludedIPs is defined and middleware.ipAllowList.ipStrategy.excludedIPs is not none %}
+          excludedIPs:
+          {% for ip in middleware.ipAllowList.ipStrategy.excludedIPs %}
+            - {{ ip }}
+          {% endfor %}
+        {% endif %}
+      {% if middleware.ipAllowList.rejectStatusCode is defined and middleware.ipAllowList.rejectStatusCode is not none %}
+        rejectStatusCode:
+      {% endif %}
+      {% endif %}

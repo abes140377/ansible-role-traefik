@@ -1,0 +1,64 @@
+{% if traefik_certificate_resolvers is defined and traefik_certificate_resolvers is not none %}
+certificatesResolvers:
+{% for certificate_resolver in traefik_certificate_resolvers %}
+{% if certificate_resolver.name is defined and certificate_resolver.name is not none and
+  (certificate_resolver.acme.email is defined and certificate_resolver.acme.email is not none and
+  certificate_resolver.acme.storage is defined and certificate_resolver.acme.storage is not none) or
+  certificate_resolver.tailscale is defined and certificate_resolver.tailscale is not none %}
+  {{ certificate_resolver.name }}:
+  {% if certificate_resolver.acme is defined and certificate_resolver.acme is not none %}
+    acme:
+      email: {{ certificate_resolver.acme.email }}
+      storage: {{ certificate_resolver.acme.storage }}
+    {% if certificate_resolver.acme.caServer is defined and certificate_resolver.acme.caServer is not none %}
+      caServer: {{ certificate_resolver.acme.caServer }}
+    {% endif %}
+    {% if certificate_resolver.acme.preferredChain is defined and certificate_resolver.acme.preferredChain is not none %}
+      preferredChain: {{ certificate_resolver.acme.preferredChain }}
+    {% endif %}
+    {% if certificate_resolver.acme.keyType is defined and certificate_resolver.acme.keyType is not none %}
+      keyType: {{ certificate_resolver.acme.keyType }}
+    {% endif %}
+    {% if certificate_resolver.acme.eab is defined and certificate_resolver.acme.eab is not none %}
+      eab:
+      {% if certificate_resolver.acme.eab.kid is defined and certificate_resolver.acme.eab.kid is not none %}
+        kid: {{ certificate_resolver.acme.eab.kid }}
+      {% endif %}
+      {% if certificate_resolver.acme.eab.hmacEncoded is defined and certificate_resolver.acme.eab.hmacEncoded is not none %}
+        hmacEncoded: {{ certificate_resolver.acme.eab.hmacEncoded }}
+      {% endif %}
+    {% endif %}
+    {% if certificate_resolver.acme.certificatesDuration is defined and certificate_resolver.acme.certificatesDuration is not none %}
+      certificatesDuration: {{ certificate_resolver.acme.certificatesDuration }}
+    {% endif %}
+    {% if certificate_resolver.acme.dnsChallenge is defined and certificate_resolver.acme.dnsChallenge is not none %}
+      dnsChallenge:
+      {% if certificate_resolver.acme.dnsChallenge.provider is defined and certificate_resolver.acme.dnsChallenge.provider is not none %}
+        provider: {{ certificate_resolver.acme.dnsChallenge.provider }}
+      {% endif%}
+      {% if certificate_resolver.acme.dnsChallenge.delayBeforeCheck is defined and certificate_resolver.acme.dnsChallenge.delayBeforeCheck is not none %}
+        delayBeforeCheck: {{ certificate_resolver.acme.dnsChallenge.delayBeforeCheck }}
+      {% endif%}
+      {% if certificate_resolver.acme.dnsChallenge.resolvers is defined and certificate_resolver.acme.dnsChallenge.resolvers is not none %}
+        resolvers:
+        {% for resolver in certificate_resolver.acme.dnsChallenge.resolvers %}
+          - {{ resolver }}
+        {% endfor %}
+      {% endif%}
+      {% if certificate_resolver.acme.dnsChallenge.disablePropagationCheck is defined and certificate_resolver.acme.dnsChallenge.disablePropagationCheck is not none %}
+        disablePropagationCheck: {{ certificate_resolver.acme.dnsChallenge.disablePropagationCheck }}
+      {% endif%}
+    {% elif certificate_resolver.acme.httpChallenge is defined and certificate_resolver.acme.httpChallenge is not none %}
+      httpChallenge:
+      {% if certificate_resolver.acme.httpChallenge.entryPoint is defined and certificate_resolver.acme.httpChallenge.entryPoint is not none %}
+        entryPoint: {{ certificate_resolver.acme.httpChallenge.entryPoint }}
+      {% endif %}
+    {% elif certificate_resolver.acme.tlsChallenge is defined and certificate_resolver.acme.tlsChallenge is not none %}
+      tlsChallenge: {}
+    {% endif %}
+  {% elif certificate_resolver.tailscale is defined and certificate_resolver.tailscale is not none %}
+    tailscale: {}
+  {%endif %}
+{% endif %}
+{% endfor %}
+{% endif %}

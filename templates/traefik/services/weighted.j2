@@ -1,0 +1,33 @@
+    {{ service.name }}:
+      weighted:
+        services:
+        {% for service in service.weighted.services %}
+        - name: {{ service.name }}
+          weight: {{ service.weight }}
+        {% endfor %}
+      {% if service.weighted.sticky is defined %}
+        sticky:
+        {% if service.weighted.sticky.cookie is defined and service.weighted.sticky.cookie is not none %}
+          cookie:
+          {% if service.weighted.sticky.cookie.name is defined and service.weighted.sticky.cookie.name is not none %}
+            name: {{ service.weighted.sticky.cookie.name }}
+          {% endif %}
+          {% if service.weighted.sticky.cookie.secure is defined and service.weighted.sticky.cookie.secure is not none %}
+            secure: {{ service.weighted.sticky.cookie.secure }}
+          {% endif %}
+          {% if service.weighted.sticky.cookie.httpOnly is defined and service.weighted.sticky.cookie.httpOnly is not none %}
+            httpOnly: {{ service.weighted.sticky.cookie.httpOnly }}
+          {% endif %}
+          {% if service.weighted.sticky.cookie.sameSite is defined and service.weighted.sticky.cookie.sameSite is not none %}
+            sameSite: {{ service.weighted.sticky.cookie.sameSite }}
+          {% endif %}
+          {% if service.weighted.sticky.cookie.maxAge is defined and service.weighted.sticky.cookie.maxAge is not none %}
+            maxAge: {{ service.weighted.sticky.cookie.maxAge }}
+          {% endif %}
+        {% else %}
+          cookie: {}
+        {% endif %}
+      {% endif %}
+      {% if service.weighted.healthCheck is defined and service.weighted.healthCheck is not none %}
+        healthCheck: {}
+      {% endif %}

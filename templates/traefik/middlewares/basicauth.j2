@@ -1,0 +1,20 @@
+    {{ middleware.name }}:
+      basicAuth:
+      {% if middleware.basicAuth.users is defined and middleware.basicAuth.users is not none %}
+        users:
+        {% for user in middleware.basicAuth.users %}
+          - "{{ user }}"
+        {% endfor %}
+      {% endif %}
+      {% if middleware.basicAuth.usersFile is defined and middleware.basicAuth.usersFile is not none%}
+        usersFile: {{ middleware.basicAuth.usersFile }}
+      {% endif %}
+      {% if middleware.basicAuth.realm is defined and middleware.basicAuth.realm is not none %}
+        realm: {{ middleware.basicAuth.realm }}
+      {% endif %}
+      {% if middleware.basicAuth.removeHeader is defined and middleware.basicAuth.removeHeader is not none %}
+        removeHeader: {{ middleware.basicAuth.removeHeader }}
+      {% endif %}
+      {% if middleware.basicAuth.headerField is defined and middleware.basicAuth.headerField is not none %}
+        headerField: {{ middleware.basicAuth.headerField }}
+      {% endif %}

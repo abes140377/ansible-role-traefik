@@ -1,0 +1,59 @@
+{% if traefik_routers is defined and traefik_routers is not none %}
+  {% set valid_routers = [] %}
+  {% for router in traefik_routers %}
+    {% if router is not none and router.name is defined and
+      (router.service is defined and router.service is not none) and
+      (router.rule is defined and router.rule is not none) %}
+      {% set valid_routers = valid_routers.append(router) %}
+    {% endif %}
+  {% endfor %}
+  {% if valid_routers | length > 0 %}
+  routers:
+  {% for router in valid_routers %}
+    {{ router.name }}:
+    {% if router.entryPoints is defined and router.entryPoints is not none %}
+      entryPoints:
+      {% for entryPoint in router.entryPoints %}
+        - {{ entryPoint }}
+      {% endfor %}
+    {% endif %}
+    {% if router.middlewares is defined and router.middlewares is not none %}
+      middlewares:
+      {% for middleware in router.middlewares %}
+        - {{ middleware }}
+      {% endfor %}
+    {% endif %}
+      service: {{ router.service }}
+      rule: {{ router.rule }}
+    {% if router.ruleSyntax is defined and router.ruleSyntax is not none %}
+      ruleSyntax: {{ router.ruleSyntax }}
+    {% endif %}
+    {% if router.priority is defined and router.priority is not none %}
+      priority: {{ router.priority }}
+    {% endif %}
+    {% if router.tls is defined %}
+      tls:
+      {% if router.tls.options is defined and router.tls.options is not none %}
+        options: {{ router.tls.options }}
+      {% endif %}
+      {% if router.tls.certResolver is defined and router.tls.certResolver is not none%}
+        certResolver: {{ router.tls.certResolver }}
+      {% endif %}
+      {% if router.tls.domains is defined and router.tls.domains is not none %}
+        domains:
+        {% for domain in router.tls.domains %}
+        {% if domain.main is defined and domain.main is not none %}
+          - main: {{ domain.main }}
+          {% if domain.sans is defined and domains.sans is not none %}
+            sans:
+            {% for san in domain.sans %}
+              - "{{ san }}"
+            {% endfor %}
+          {% endif %}
+        {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+{% endif %}

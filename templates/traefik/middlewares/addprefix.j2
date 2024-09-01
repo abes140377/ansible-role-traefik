@@ -1,0 +1,5 @@
+    {{ middleware.name }}:
+      addPrefix:
+      {% if middleware.addPrefix.prefix is defined and middleware.addPrefix.prefix is not none %}
+        prefix: {{ middleware.addPrefix.prefix }}
+      {% endif %}

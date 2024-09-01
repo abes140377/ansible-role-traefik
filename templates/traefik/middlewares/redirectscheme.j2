@@ -1,0 +1,9 @@
+    {{ middleware.name }}:
+      redirectScheme:
+        scheme: {{ middleware.redirectScheme.scheme }}
+      {% if middleware.redirectScheme.port is defined and middleware.redirectScheme.port is not none %}
+        port: {{ middleware.redirectScheme.port }}
+      {% endif %}
+      {% if middleware.redirectScheme.permanent is defined and middleware.redirectScheme.permanent is not none %}
+        permanent: {{ middleware.redirectScheme.permanent }}
+      {% endif %}

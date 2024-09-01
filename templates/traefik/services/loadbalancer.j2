@@ -1,0 +1,81 @@
+    {{ service.name }}:
+      loadBalancer:
+      {% if service.loadBalancer.sticky is defined %}
+        sticky:
+        {% if service.loadBalancer.sticky.cookie is defined and service.loadBalancer.sticky.cookie is not none %}
+          cookie:
+          {% if service.loadBalancer.sticky.cookie.name is defined and service.loadBalancer.sticky.cookie.name is not none %}
+            name: {{ service.loadBalancer.sticky.cookie.name }}
+          {% endif %}
+          {% if service.loadBalancer.sticky.cookie.secure is defined and service.loadBalancer.sticky.cookie.secure is not none %}
+            secure: {{ service.loadBalancer.sticky.cookie.secure }}
+          {% endif %}
+          {% if service.loadBalancer.sticky.cookie.httpOnly is defined and service.loadBalancer.sticky.cookie.httpOnly is not none %}
+            httpOnly: {{ service.loadBalancer.sticky.cookie.httpOnly }}
+          {% endif %}
+          {% if service.loadBalancer.sticky.cookie.sameSite is defined and service.loadBalancer.sticky.cookie.sameSite is not none %}
+            sameSite: {{ service.loadBalancer.sticky.cookie.sameSite }}
+          {% endif %}
+          {% if service.loadBalancer.sticky.cookie.maxAge is defined and service.loadBalancer.sticky.cookie.maxAge is not none %}
+            maxAge: {{ service.loadBalancer.sticky.cookie.maxAge }}
+          {% endif %}
+        {% else %}
+          cookie: {}
+        {% endif %}
+      {% endif %}
+        servers:
+        {% for server in service.loadBalancer.servers %}
+          - url: {{ server.url }}
+          {% if server.weight is defined and server.weight is not none %}
+            weight: {{ server.weight }}
+          {% endif %}
+        {% endfor%}
+      {% if service.loadBalancer.healthCheck.path is defined and service.loadBalancer.healthCheck.path is not none %}
+        healthCheck:
+        {% if service.loadBalancer.healthCheck.scheme is defined and service.loadBalancer.healthCheck.scheme is not none %}
+          scheme: {{ service.loadBalancer.healthCheck.scheme }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.mode is defined and service.loadBalancer.healthCheck.mode is not none %}
+          mode: {{ service.loadBalancer.healthCheck.mode }}
+        {% endif %}
+          path: {{ service.loadBalancer.healthCheck.path }}
+        {% if service.loadBalancer.healthCheck.method is defined and service.loadBalancer.healthCheck.method is not none %}
+          method: {{ service.loadBalancer.healthCheck.method }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.status is defined and service.loadBalancer.healthCheck.status is not none %}
+          status: {{ service.loadBalancer.healthCheck.status }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.port is defined and service.loadBalancer.healthCheck.port is not none %}
+          port: {{ service.loadBalancer.healthCheck.port }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.interval is defined and service.loadBalancer.healthCheck.interval is not none %}
+          interval: {{ service.loadBalancer.healthCheck.interval }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.timeout is defined and service.loadBalancer.healthCheck.timeout is not none %}
+          timeout: {{ service.loadBalancer.healthCheck.timeout }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.hostname is defined and service.loadBalancer.healthCheck.hostname is not none %}
+          hostname: {{ service.loadBalancer.healthCheck.hostname }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.followRedirects is defined and service.loadBalancer.healthCheck.followRedirects is not none %}
+          followRedirects: {{ service.loadBalancer.healthCheck.followRedirects }}
+        {% endif %}
+        {% if service.loadBalancer.healthCheck.headers is defined and service.loadBalancer.healthCheck.headers is not none %}
+          headers:
+          {% for key, value in service.loadBalancer.healthCheck.headers.items() %}
+            {{ key }}: {{ value }}
+          {% endfor %}
+        {% endif %}
+      {% endif %}
+      {% if service.loadBalancer.passHostHeader is defined and service.loadBalancer.passHostHeader is not none %}
+        passHostHeader: {{ service.loadBalancer.passHostHeader }}
+      {% endif %}
+      {% if service.loadBalancer.responseForwarding is defined and service.loadBalancer.responseForwarding is not none %}
+        responseForwarding:
+        {% if service.loadBalancer.responseForwarding.flushInterval is defined and service.loadBalancer.responseForwarding.flushInterval is not none %}
+          flushInterval: {{ service.loadBalancer.responseForwarding.flushInterval }}
+        {% endif %}
+      {% endif %}
+      {% if service.loadBalancer.serversTransport is defined and service.loadBalancer.serversTransport is not none %}
+        serversTransport: {{ service.loadBalancer.serversTransport }}
+      {% endif %}

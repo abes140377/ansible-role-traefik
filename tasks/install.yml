@@ -1,0 +1,68 @@
+---
+- name: Create the Traefik group
+  ansible.builtin.group:
+    name: "{{ traefik_system_group }}"
+    state: present
+    system: true
+  when: traefik_system_group != "root"
+
+- name: Create the Traefik user
+  ansible.builtin.user:
+    name: "{{ traefik_system_user }}"
+    groups: "{{ traefik_system_group }}"
+    append: true
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+    home: /
+  when: traefik_system_user != "root"
+
+- name: Get binary
+  when:
+    - traefik_binary_local_dir | length == 0
+    - not traefik_skip_install
+  block:
+
+    - name: Download Traefik binary to local folder
+      become: false
+      ansible.builtin.get_url:
+        url: "{{ traefik_binary_url }}"
+        dest: "{{ traefik_archive_path }}/traefik_{{ traefik_version }}_linux_{{ go_arch }}.tar.gz"
+        mode: '0644'
+      register: _download_binary
+      until: _download_binary is succeeded
+      retries: 5
+      delay: 2
+      delegate_to: localhost
+      check_mode: false
+
+    - name: Unpack Traefik binary
+      become: false
+      ansible.builtin.unarchive:
+        src: "{{ traefik_archive_path }}/traefik_{{ traefik_version }}_linux_{{ go_arch }}.tar.gz"
+        dest: "{{ traefik_archive_path }}"
+        creates: "{{ traefik_archive_path }}/traefik"
+      delegate_to: localhost
+      check_mode: false
+
+    - name: Propagate Traefik binaries
+      ansible.builtin.copy:
+        src: "{{ traefik_archive_path }}/traefik"
+        dest: "{{ traefik_binary_install_dir }}/traefik"
+        mode: "0755"
+        owner: root
+        group: root
+      notify: restart traefik
+      when: not ansible_check_mode
+
+- name: Propagate locally distributed Traefik binary
+  ansible.builtin.copy:
+    src: "{{ traefik_binary_local_dir }}/traefik"
+    dest: "{{ traefik_binary_install_dir }}/traefik"
+    mode: "0755"
+    owner: root
+    group: root
+  when:
+    - traefik_binary_local_dir | length > 0
+    - not traefik_skip_install
+  notify: restart traefik

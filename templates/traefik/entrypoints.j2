@@ -1,0 +1,15 @@
+{% if traefik_entrypoints is defined and traefik_entrypoints is not none %}
+entryPoints:
+{% for entrypoint in traefik_entrypoints %}
+{% if entrypoint.name is defined and entrypoint.name is not none and entrypoint.address is defined and entrypoint.address is not none %}
+  {{ entrypoint.name }}:
+    address: {{ entrypoint.address }}
+  {% if entrypoint.reusePort is defined and entrypoint.reusePort is not none %}
+    reusePort: {{ entrypoint.reusePort }}
+  {% endif %}
+  {% if entrypoint.asDefault is defined and entrypoint.asDefault is not none %}
+    asDefault: {{ entrypoint.asDefault }}
+  {% endif %}
+{% endif %}
+{% endfor %}
+{% endif %}

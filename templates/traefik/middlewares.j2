@@ -1,0 +1,33 @@
+{% if traefik_middlewares is defined and traefik_middlewares is not none %}
+  {% set valid_middlewares = [] %}
+  {% for middleware in traefik_middlewares %}
+    {% if middleware is not none and middleware.name is defined and
+      (middleware.addPrefix.prefix is defined and middleware.addPrefix.prefix is not none) or
+      ((middleware.basicAuth.users is defined and middleware.basicAuth.users is not none) or
+      (middleware.basicAuth.usersFile is defined and middleware.basicAuth.usersFile is not none)) or
+      (middleware.buffering is defined) or
+      (middleware.chain.middlewares is defined and middleware.chain.middlewares is not none) or
+      (middleware.ipAllowList.sourceRange is defined and middleware.ipAllowList.sourceRange is not none) or
+      (middleware.redirectScheme.scheme is defined and middleware.redirectScheme.scheme is not none) %}
+      {% set valid_middlewares = valid_middlewares.append(middleware) %}
+    {% endif %}
+  {% endfor %}
+  {% if valid_middlewares | length > 0 %}
+  middlewares:
+  {% for middleware in valid_middlewares %}
+    {% if middleware.addPrefix is defined %}
+      {% include 'middlewares/addprefix.j2' with context %}
+    {% elif middleware.basicAuth is defined %}
+      {% include 'middlewares/basicauth.j2' with context %}
+    {% elif middleware.buffering is defined %}
+      {% include 'middlewares/buffering.j2' with context %}
+    {% elif middleware.chain is defined %}
+      {% include 'middlewares/chain.j2' with context %}
+    {% elif middleware.ipAllowList is defined %}
+      {% include 'middlewares/ipallowlist.j2' with context %}
+    {% elif middleware.redirectScheme is defined %}
+      {% include 'middlewares/redirectscheme.j2' with context %}
+    {% endif %}
+  {% endfor %}
+  {% endif %}
+{% endif %}

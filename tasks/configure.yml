@@ -1,0 +1,49 @@
+---
+- name: Copy the Traefik systemd service file
+  ansible.builtin.template:
+    src: traefik.service.j2
+    dest: /etc/systemd/system/traefik.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart traefik
+
+- name: Configure traefik
+  block:
+    - name: Ensure Traefik directory exists
+      ansible.builtin.file:
+        path: "{{ traefik_config_dir }}"
+        state: directory
+        owner: "{{ traefik_system_user }}"
+        group: "{{ traefik_system_group }}"
+        mode: "0755"
+
+    - name: Copy the Traefik config file
+      ansible.builtin.template:
+        src: traefik/static.yml.j2
+        dest: "{{ traefik_config_dir }}/traefik_static.yml"
+        owner: root
+        group: root
+        mode: "0644"
+      notify: restart traefik
+
+    - name: Ensure acme.json exists
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: "{{ traefik_system_user }}"
+        group: "{{ traefik_system_group }}"
+        mode: "0600"
+        state: touch
+        modification_time: preserve
+        access_time: preserve
+      loop:
+        "{{ traefik_acme_storage }}"
+      when: traefik_acme_storage is defined
+
+    - name: Copy the Traefik dynamic config file
+      ansible.builtin.template:
+        src: traefik/dynamic.yml.j2
+        dest: "{{ traefik_config_dir }}/traefik_dynamic.yml"
+        owner: root
+        group: root
+        mode: "0644"

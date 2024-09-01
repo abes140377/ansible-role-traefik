@@ -1,0 +1,9 @@
+    {{ service.name }}:
+      failover:
+        service: {{ service.failover.service }}
+      {% if service.failover.fallback is defined and service.failover.fallback is not none %}
+        fallback: {{ service.failover.fallback }}
+      {% endif %}
+      {% if service.failover.healthCheck is defined and service.failover.healthCheck is not none %}
+        healthCheck: {}
+      {% endif %}

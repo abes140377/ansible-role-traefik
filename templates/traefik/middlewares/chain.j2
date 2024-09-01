@@ -1,0 +1,8 @@
+    {{ middleware.name }}:
+      chain:
+      {% if middleware.chain.middlewares is defined and middleware.chain.middlewares is not none %}
+        middlewares:
+        {% for middleware in middleware.chain.middlewares %}
+          - {{ middleware }}
+        {% endfor %}
+      {% endif %}

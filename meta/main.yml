@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: "traefik"
+  author: "tomhesse"
+  description: "Install and configure traefik"
+  license: "license (BSD, MIT)"
+  min_ansible_version: "2.9"
+  platforms:
+    - name: "Ubuntu"
+      versions:
+        - "focal"
+        - "jammy"
+        - "noble"
+    - name: "Debian"
+      versions:
+        - "buster"
+        - "bullseye"
+        - "bookworm"
+  galaxy_tags:
+    - "web"
+    - "proxy"
+    - "webproxy"
+    - "reverseproxy"

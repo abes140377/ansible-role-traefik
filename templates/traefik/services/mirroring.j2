@@ -1,0 +1,14 @@
+    {{ service.name }}:
+      mirroring:
+        service: {{ service.mirroring.service }}
+      {% if service.mirroring.maxBodySize is defined and service.mirroring.maxBodySize is not none %}
+        maxBodySize: {{ service.mirroring.maxBodySize }}
+      {% endif %}
+        mirrors:
+        {% for mirror in service.mirroring.mirrors %}
+          - name: {{ mirror.name }}
+            percent: {{ mirror.percent }}
+        {% endfor %}
+      {% if service.mirroring.healthCheck is defined and service.mirroring.healthCheck is not none %}
+        healthCheck: {}
+      {% endif %}

@@ -1,0 +1,48 @@
+---
+- name: Preflight
+  ansible.builtin.include_tasks:
+    file: preflight.yml
+    apply:
+      tags:
+        - traefik_install
+        - traefik_configure
+        - traefik_run
+  tags:
+    - traefik_install
+    - traefik_configure
+    - traefik_run
+
+- name: Install
+  ansible.builtin.include_tasks:
+    file: install.yml
+    apply:
+      become: true
+      tags:
+        - traefik_install
+  when:
+    ( not __traefik_is_installed.stat.exists ) or
+    ( traefik_binary_local_dir | length > 0 )
+  tags:
+    - traefik_install
+
+- name: Configure
+  ansible.builtin.include_tasks:
+    file: configure.yml
+    apply:
+      become: true
+      tags:
+        - traefik_configure
+  tags:
+    - traefik_configure
+
+- name: Ensure Traefik is enabled on boot
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+    name: traefik
+    enabled: true
+    state: started
+  when:
+    - not ansible_check_mode
+  tags:
+    - traefik_run

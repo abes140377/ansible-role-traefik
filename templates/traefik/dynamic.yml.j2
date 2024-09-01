@@ -1,0 +1,6 @@
+#jinja2: trim_blocks: True, lstrip_blocks: True
+{{ ansible_managed | comment }}
+http:
+  {% include 'services.j2' with context %}
+  {% include 'middlewares.j2' with context %}
+  {% include 'routers.j2' with context %}
