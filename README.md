@@ -52,8 +52,8 @@ Set systemd service environment variables. Could be used for DNS challenge provi
 
 Set systemd ReadWritePath and create the acme storage.
 
-    traefik_api_enable: true
-    traefik_dashboard_enable: true
+    traefik_api_enabled: true
+    traefik_dashboard_enabled: true
 
 Enable the API and the Traefik dashboard.
 
