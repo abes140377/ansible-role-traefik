@@ -8,6 +8,7 @@ traefik_binary_install_dir: "/usr/local/bin"
 traefik_system_group: "traefik"
 traefik_system_user: "{{ traefik_system_group }}"
 traefik_config_dir: /etc/traefik
+traefik_log_level: ERROR # DEBUG, INFO, WARN, ERROR (default)
 
 # Local path to stash the archive and its extraction
 traefik_archive_path: "/tmp"
